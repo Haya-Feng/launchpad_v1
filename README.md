@@ -1,2 +1,1 @@
-# web3
-web3 project
+# some blockchain simple project
