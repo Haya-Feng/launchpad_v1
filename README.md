@@ -37,10 +37,10 @@ npx hardhat run scripts/deploy.js --network localhost
 
 ### 合约交互示范
 
-#### 启动 Hardhat 控制台
+#### 1.启动 Hardhat 控制台
 npx hardhat console --network localhost
 
-#### console 语句
+#### 2.console语句
 
 // 获取合约实例
 const token = await ethers.getContractAt("NToken", "代币合约地址")
