@@ -43,36 +43,53 @@ npx hardhat console --network localhost
 #### 2.console语句
 
 // 获取合约实例
+
 const token = await ethers.getContractAt("NToken", "代币合约地址")
+
 const launchpad = await ethers.getContractAt("Launchpad", "Launchpad地址")
+
 const staking = await ethers.getContractAt("StakingPool", "质押池地址")
 
+
 // 获取测试账户
+
 const [owner, user1] = await ethers.getSigners()
 
 // 获取质押池地址
+
 const stakAddress = await staking.getAddress()
 
 //用户1买代币
+
 await launchpad.connect(user1).buy({value: ethers.parseEther("10")})
 
 //用户查代币余额
+
 await token.balanceOf(user1.address)
 
 //用户授权
+
 await token.connect(user1).approve(staking.address, ethers.utils.parseEther("100"))
 
 //质押/奖励代币合约地址
+
 const stakingTAddress = await staking.stakingToken()
+
 const stakingT = await ethers.getContractAt("IERC20", stakingTAddress)
+
 const earnedTAddress = await staking.earnedToken()
+
 const earnedT= await ethers.getContractAt("IERC20", earnedTAddress)
 
+
 // 模拟时间前进一天
+
 await network.provider.send("evm_increaseTime", [24 * 3600]) 
+
 await network.provider.send("evm_mine")
 
 //提取本金和奖励
+
 await staking.connect(user1).withdrawAll()
 
 
