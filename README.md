@@ -35,12 +35,12 @@ npx hardhat run scripts/deploy.js --network localhost
 | StakingPool | `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` |
 | Launchpad | `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512` |
 
-## 合约交互示范
+### 合约交互示范
 
-### 启动 Hardhat 控制台
+#### 启动 Hardhat 控制台
 npx hardhat console --network localhost
 
-### 启动 Hardhat 控制台
+#### console 语句
 
 // 获取合约实例
 const token = await ethers.getContractAt("NToken", "代币合约地址")
