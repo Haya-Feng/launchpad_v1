@@ -3,7 +3,7 @@
 [![Solidity Version](https://img.shields.io/badge/Solidity-^0.8.20-blue)](https://soliditylang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-一个超简易的质押池和代币发行平台项目，包含 ERC20 代币、质押合约和代币发行平台，专供学习。
+一个超简易的质押池和代币发行平台项目，包含 ERC20 代币、质押合约和代币发行平台，专供学习,也会陆续优化更新。
 
 ## 功能
 
@@ -95,12 +95,12 @@ await staking.connect(user1).withdrawAll() //提取本金和奖励
 
 
 
-## 贡献指南
+## 项目优化
 
-欢迎提交 PR！请确保：
-1. 添加测试覆盖新功能
-2. 更新文档
-3. 遵循 Solidity 风格指南
+1.使用UUPS代理模式实现合约的可升级功能，并设置白名单以及最大购买token量限制
+  - 部署`LaunchpadV1`代理合约，并初始化，升级到`LaunchpadV2`
+  - 部署脚本`deployUpgradeable.js`
+
 
 ## 许可证
 MIT
