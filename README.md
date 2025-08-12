@@ -101,6 +101,13 @@ await staking.connect(user1).withdrawAll() //提取本金和奖励
   - 部署`LaunchpadV1`代理合约，并初始化，升级到`LaunchpadV2`
   - 部署脚本`deployUpgradeable.js`
 
+2.使用工厂模式动态创建staking合约，以并统一管理
+  - 引入OpenZeppelin的Clones合约，供了最小代理`（EIP-1167）`的实现
+  - 调用createPool()创建新合约会返回一个交易对象（tx），需要获取合约address需要从`事件日志（event）`中提取
+
+
+
+
 
 ## 许可证
 MIT
