@@ -105,6 +105,8 @@ await staking.connect(user1).withdrawAll() //提取本金和奖励
   - 引入OpenZeppelin的Clones合约，供了最小代理`（EIP-1167）`的实现
   - 调用createPool()创建新合约会返回一个交易对象（tx），需要获取合约address需要从`事件日志（event）`中提取
 
+3.集成 OpenZeppelin 的 AccessControl，实现白名单签名验证（EIP-712）小工具 
+
 
 
 
