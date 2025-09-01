@@ -3,14 +3,14 @@
 [![Solidity Version](https://img.shields.io/badge/Solidity-^0.8.20-blue)](https://soliditylang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-一个超简易的质押池和代币发行平台项目，包含 ERC20 代币、质押合约和代币发行平台，专供学习,也会陆续优化更新。
+一个质押池和代币发行平台项目，包含 ERC20 代币、质押合约和代币发行平台。
 
 ## 功能
 
-- 🪙 创建和管理 ERC20 代币
-- 🔒 质押代币获取奖励
-- 🚀 代币发行平台（Launchpad）
-- 📊 完整的测试覆盖率
+- 创建和管理代币销售池
+- 支持质押积分门槛机制（支持多链USDT地址识别质押
+- 处理超额认购退款（认购支持ETH和USDT
+- 分发募集资金和代币
 
 ## 快速开始
 
@@ -31,7 +31,6 @@ npx hardhat run scripts/deploy.js --network localhost
 
 | 合约 | 地址 |
 |------|------|
-| NToken | `0x5FbDB2315678afecb367f032d93F642f64180aa3` |
 | StakingPool | `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` |
 | Launchpad | `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512` |
 
@@ -106,6 +105,10 @@ await staking.connect(user1).withdrawAll() //提取本金和奖励
   - 调用createPool()创建新合约会返回一个交易对象（tx），需要获取合约address需要从`事件日志（event）`中提取
 
 3.集成 OpenZeppelin 的 AccessControl，实现白名单签名验证（EIP-712）小工具 
+
+4.使用library库自动识别多链USDT质押以及认购除USDT外额外支持ETH
+
+5.增加取消池子资格，紧急暂停合约，转移管理员权限等安全优化
 
 
 
