@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity version;
+pragma solidity ^0.8.20;
 
 import "./LaunchpadStorage.sol";
 
@@ -10,7 +10,7 @@ contract LaunchpadProxy is LaunchpadStorage{
         admin = _admin;
 
        (bool success,)=  _logic.delegatecall(
-            abi.encodeWithSignature("initialize(address,address)", _staking,_admin);
+            abi.encodeWithSignature("initialize(address,address)", _staking,_admin)
         );
         require(success, "Initialization failed");
 

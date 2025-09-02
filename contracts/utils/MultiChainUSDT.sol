@@ -8,9 +8,8 @@ library MultiChainUSDT {
         string name;
     }
 
-    ChainConfig[] private chains;
 
-    function init() internal {
+    function init(ChainConfig[] storage chains) internal {
         // 以太坊主网
         chains.push(ChainConfig(1, 0xdAC17F958D2ee523a2206206994597C13D831ec7, "Ethereum"));
         // BSC 主网
@@ -20,6 +19,7 @@ library MultiChainUSDT {
     }
 
     function addChain(
+        ChainConfig[] storage chains,
         uint256 _chainId,
         address _usdtAdd,
         string memory _name
@@ -28,9 +28,9 @@ library MultiChainUSDT {
     }
 
 
-    function getCurrentUSDTChain() internal view returns(address) {
+    function getCurrentUSDTChain(ChainConfig[] storage chains) internal view returns(address) {
         for (uint256 index = 0; index < chains.length; index++) {
-            if(chains[index] == block.chainid){
+            if(chains[index].chainId == block.chainid){
                 return chains[index].usdtAdd;
             }
             revert("Invaild chainId");

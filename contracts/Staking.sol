@@ -15,6 +15,8 @@ contract Staking is ReentrancyGuard, Ownable {
 
     uint256 public pointsPerSecond = 1e16; //每秒质押奖励0.01
 
+    IERC20 public SToken;
+
     struct StakerInfo {
         uint256 stakedAmount;
         uint256 points;
@@ -27,9 +29,9 @@ contract Staking is ReentrancyGuard, Ownable {
     event Staking(address sender, uint256 amount);
     event Unstaking(address sender, uint256 amount);
 
-    constructor() {
-        supportedChains.init();
-        address usdtAdd = supportedChains.getCurrentUSDTChain();
+    constructor() Ownable(msg.sender) {
+        MultiChainUSDT.init(supportedChains);
+        usdtAdd = MultiChainUSDT.getCurrentUSDTChain(supportedChains);
         SToken = IERC20(usdtAdd);
     }
 
@@ -42,10 +44,7 @@ contract Staking is ReentrancyGuard, Ownable {
         user.stakedAmount += amount;
         user.updTime += block.timestamp;
 
-        require(
-            SToken.safeTransferFrom(msg.sender, address(this), amount),
-            "transfer fail"
-        );
+        SToken.safeTransferFrom(msg.sender, address(this), amount);
 
         emit Staking(msg.sender, amount);
     }
@@ -58,10 +57,7 @@ contract Staking is ReentrancyGuard, Ownable {
         _updUserPoints(msg.sender);
         user.stakedAmount += amount;
         user.updTime += block.timestamp;
-        require(
-            SToken.safeTransferFrom(address(this), msg.sender, amount),
-            "transfer fail"
-        );
+        SToken.safeTransferFrom(address(this), msg.sender, amount);
         emit Unstaking(msg.sender, amount);
     }
 
@@ -77,18 +73,17 @@ contract Staking is ReentrancyGuard, Ownable {
         user.updTime = block.timestamp;
     }
 
-    function getPoints(address user)external returns(uint256) {
-        _updUserPoints(address user);
+    function getPoints(address user) external returns (uint256) {
+        _updUserPoints(user);
         StakerInfo storage user = users[msg.sender];
         return user.points;
-        
     }
 
     function updPointsRate(uint256 _rate) external onlyOwner {
         pointsPerSecond = _rate;
     }
 
-    function getUsdtAdd() external view returns(address) {
+    function getUsdtAdd() external view returns (address) {
         return usdtAdd;
     }
 }

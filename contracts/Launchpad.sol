@@ -1,17 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./interfaces/IStaking.sol";
 import "./LaunchpadStorage.sol";
 
-contract Launchpad is LaunchpadStorage, ReentrancyGuard, Ownable {
+contract Launchpad is LaunchpadStorage, ReentrancyGuard {
     using SafeERC20 for IERC20;
     modifier notEmergencyPaused() {
         require(!isPaused, "Contract is emergency paused");
+        _;
+    }
+    modifier isAdmin() {
+        require(msg.sender == admin, "only admin");
         _;
     }
 
@@ -32,14 +36,18 @@ contract Launchpad is LaunchpadStorage, ReentrancyGuard, Ownable {
         uint256 userOfferingAmount,
         uint256 userRefundAmount
     );
-    event CancelPool(uint256 poolId,bool isCancel);
+    event Withdraw(
+        uint256 poolId,
+        address receiptAdd,
+        uint256 currentAmount
+    );
+    event CancelPool(uint256 poolId, bool isCancel);
     event Paused(bool isPaused);
 
     function initialize(address _stakingAdd, address _admin) external {
         require(stakingAdd == address(0));
         stakingAdd = _stakingAdd;
         admin = _admin;
-        _transferOwnership(_admin);
     }
 
     function createPool(
@@ -49,8 +57,8 @@ contract Launchpad is LaunchpadStorage, ReentrancyGuard, Ownable {
         uint256 _offerTokenAmount,
         uint256 _startTime,
         uint256 _endTime
-    ) {
-        require(startTime < endTime, "Invailed Time");
+    ) external {
+        require(_startTime < _endTime, "Invailed Time");
         pools.push(
             Pool({
                 proTokenAdd: _proTokenAdd,
@@ -92,15 +100,19 @@ contract Launchpad is LaunchpadStorage, ReentrancyGuard, Ownable {
         } else {
             require(msg.value == 0, "ETH not allowed");
             address usdtAdd = IStaking(stakingAdd).getUsdtAdd();
-            require(usdtAdd == _tokenAdd, "Invailed token");
+            // require(usdtAdd == _tokenAdd, "Invailed token");
 
-            IRC20(usdtAdd).safeTransferFrom(msg.sender, address(this), _amount);
+            IERC20(usdtAdd).safeTransferFrom(
+                msg.sender,
+                address(this),
+                _amount
+            );
         }
 
-        userDepositAmounts[_poolId][mag.sender] += _amount;
+        userDepositAmounts[_poolId][msg.sender] += _amount;
         poolDepositAmounts[_poolId] += _amount;
 
-        emit UserDeposited(_poolId, msg.sender, _amount, _tokenAddress);
+        emit UserDeposited(_poolId, msg.sender, _amount, pool.depositToken);
     }
 
     function subscription(
@@ -143,19 +155,19 @@ contract Launchpad is LaunchpadStorage, ReentrancyGuard, Ownable {
             userRefundAmount
         );
     }
-    function withdraw(uint256 _poolId, address receiptAdd) external onlyOwner {
+    function withdraw(uint256 _poolId, address receiptAdd) external isAdmin {
         uint256 total = poolDepositAmounts[_poolId];
         Pool storage pool = pools[_poolId];
 
         require(block.timestamp > pool.endTime, "Not ended");
-        require(!pool.isCancelled, "Pool cancelled");
+        require(!pool.isCancel, "Pool cancelled");
         require(total > 0, "no money");
 
         uint256 currentAmount = total > pool.raisingAmount
             ? pool.raisingAmount
             : total;
 
-        pool.isCancelled = true;
+        pool.isCancel = true;
         total = 0;
 
         bool success;
@@ -170,17 +182,17 @@ contract Launchpad is LaunchpadStorage, ReentrancyGuard, Ownable {
         }
         require(success, "Withdraw failed");
 
-        emit Withdraw(_poolId, receiptAdd, currentAmount, userRefundAmount);
+        emit Withdraw(_poolId, receiptAdd, currentAmount);
     }
 
-    function isCancelPool(uint256 _poolId, bool _isCancel) external onlyOwner {
+    function isCancelPool(uint256 _poolId, bool _isCancel) external isAdmin {
         Pool storage pool = pools[_poolId];
         pool.isCancel = _isCancel;
 
         emit CancelPool(_poolId, _isCancel);
     }
 
-    function paused(bool pause) external onlyOwner {
+    function paused(bool pause) external isAdmin {
         isPaused = pause;
         emit Paused(isPaused);
     }

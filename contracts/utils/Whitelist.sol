@@ -13,7 +13,7 @@ contract Whitelist is EIP712, AccessControl {
     bytes32 public constant WHITELISTER_ROLE = keccak256("WHITELISTER_ROLE");
 
     mapping(bytes32 => bool) public usedSigns;
-    mapping(bytes32 => bool) public whiteList;
+    mapping(address => bool) public whiteList;
 
     constructor() EIP712("Signed", "1") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
