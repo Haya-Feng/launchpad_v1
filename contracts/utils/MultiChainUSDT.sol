@@ -8,14 +8,35 @@ library MultiChainUSDT {
         string name;
     }
 
-
     function init(ChainConfig[] storage chains) internal {
         // 以太坊主网
-        chains.push(ChainConfig(1, 0xdAC17F958D2ee523a2206206994597C13D831ec7, "Ethereum"));
+        chains.push(
+            ChainConfig(
+                1,
+                0xdAC17F958D2ee523a2206206994597C13D831ec7,
+                "Ethereum"
+            )
+        );
         // BSC 主网
-        chains.push(ChainConfig(56, 0x55d398326f99059fF775485246999027B3197955, "BSC"));
+        chains.push(
+            ChainConfig(56, 0x55d398326f99059fF775485246999027B3197955, "BSC")
+        );
         // Polygon 主网
-        chains.push(ChainConfig(137, 0xc2132D05D31c914a87C6611C10748AEb04B58e8F, "Polygon"));
+        chains.push(
+            ChainConfig(
+                137,
+                0xc2132D05D31c914a87C6611C10748AEb04B58e8F,
+                "Polygon"
+            )
+        );
+        // dev hardhat
+        chains.push(
+            ChainConfig(
+                31337,
+                0x5FbDB2315678afecb367f032d93F642f64180aa3,
+                "hardhat"
+            )
+        );
     }
 
     function addChain(
@@ -27,14 +48,14 @@ library MultiChainUSDT {
         chains.push(ChainConfig(_chainId, _usdtAdd, _name));
     }
 
-
-    function getCurrentUSDTChain(ChainConfig[] storage chains) internal view returns(address) {
+    function getCurrentUSDTChain(
+        ChainConfig[] storage chains
+    ) internal view returns (address) {
         for (uint256 index = 0; index < chains.length; index++) {
-            if(chains[index].chainId == block.chainid){
+            if (chains[index].chainId == block.chainid) {
                 return chains[index].usdtAdd;
             }
-            revert("Invaild chainId");
         }
-        
+        revert("Invaild chainId");
     }
 }
